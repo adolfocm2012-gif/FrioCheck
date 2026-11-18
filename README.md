@@ -1,14 +1,24 @@
 # FríoCheck
 
-Aplicación web instalable (PWA) para el diagnóstico orientativo de averías frigoríficas. Incluye biblioteca de fichas, síntomas, comprobaciones guiadas, calculadoras de recalentamiento y subenfriamiento, favoritos y registro local de partes.
+Aplicación para localizar averías frigoríficas basada en las fichas técnicas extraídas y reorganizadas de la guía Danfoss.
 
-## Instalación
+## Descargar APK Android
 
-1. En GitHub ve a **Settings > Pages**, selecciona **Deploy from a branch**, rama **main** y carpeta **/(root)** y guarda.
-2. Abre **https://adolfocm2012-gif.github.io/FrioCheck/** en Chrome (Android).
-3. Abre el menú de Chrome y pulsa **Instalar aplicación** o **Añadir a pantalla de inicio**.
-4. Tras su primera carga completa, la aplicación puede funcionar sin conexión mediante el service worker.
+**[Descargar el último FrioCheck.apk](https://github.com/adolfocm2012-gif/FrioCheck/releases/latest/download/FrioCheck.apk)**
 
-Los datos de partes se guardan en el navegador del dispositivo; **exporta CSV** como copia de seguridad.
+La aplicación Android se compila automáticamente mediante GitHub Actions cuando se actualiza el proyecto Android.
+Si todavía no aparece un APK, consulta **[Actions](https://github.com/adolfocm2012-gif/FrioCheck/actions)**. La versión APK no depende de GitHub Pages.
 
-Fuente: Danfoss, *Notas del Instalador · Localización de averías en instalaciones de refrigeración* (2005). El PDF original no se redistribuye en el repositorio público. Herramienta independiente, no oficial de Danfoss. Los diagnósticos sugeridos nunca sustituyen comprobaciones, formación, procedimientos, normativa o manuales del fabricante.
+- Incluye las fichas, búsquedas, calculadoras y partes locales.
+- Funciona sin conexión a Internet después de instalarla.
+- Los partes se guardan en el almacenamiento local de la aplicación y se pueden exportar a CSV.
+- APK de prueba firmado con clave de depuración: **no se garantiza la actualización conservando los datos**. Exporta los partes antes de reinstalar.
+- Android 8.0 o posterior.
+
+## Versión web
+
+Para publicar la PWA, habilita GitHub Pages desde `main` y `/(root)`. Dirección prevista: https://adolfocm2012-gif.github.io/FrioCheck/.
+
+## Fuente y seguridad
+
+Basada en Danfoss, *Notas del Instalador · Localización de averías en instalaciones de refrigeración* (2005). No es una aplicación oficial de Danfoss ni distribuye el PDF original. Los síntomas y causas son orientativos: confirma siempre mediante mediciones y sigue los procedimientos de seguridad y la normativa vigente.

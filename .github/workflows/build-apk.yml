@@ -1,0 +1,53 @@
+name: Compilar y publicar APK FríoCheck
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - '.github/workflows/build-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Crear APK Android
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+      - name: Preparar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Preparar Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Instalar SDK 35
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Compilar APK
+        working-directory: android
+        run: gradle --no-daemon --stacktrace assembleDebug
+      - name: Preparar archivo para descargar
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk FrioCheck.apk
+      - name: Publicar artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: FrioCheck-APK
+          path: FrioCheck.apk
+          if-no-files-found: error
+      - name: Crear nueva version descargable
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" "FrioCheck.apk" \
+            --target "${{ github.sha }}" \
+            --title "FríoCheck Android · v1.0.${{ github.run_number }}" \
+            --notes "APK Android de FríoCheck para instalación directa. Funciona sin conexión. Compilación de prueba firmada con clave de desarrollo; para actualizar a una futura versión puede ser necesario desinstalar la anterior y exportar previamente los partes."
