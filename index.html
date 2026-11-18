@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+ <meta name="theme-color" content="#0d1930">
+ <meta name="description" content="Asistente técnico de diagnóstico de averías de refrigeración. Consulta offline, registra intervenciones y calcula recalentamiento y subenfriamiento.">
+ <meta name="apple-mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+ <title>FríoCheck · Diagnóstico de averías</title>
+ <link rel="icon" href="icon-192.svg" type="image/png">
+ <link rel="apple-touch-icon" href="icon-192.svg">
+ <link rel="manifest" href="manifest.webmanifest">
+ <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+ <div class="app-shell">
+ <header class="topbar">
+  <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M20 4v32M6 12l28 16M6 28l28-16M14 9l6 6 6-6M14 31l6-6 6 6M7 19l8 1-1-8M33 21l-8-1 1 8M7 21l8-1-1 8M33 19l-8 1 1-8"/></svg></div>
+  <div class="brand-text"><strong>FríoCheck</strong><small>ASISTENTE DE MANTENIMIENTO</small></div>
+  <div class="topbar-right"><span id="online-label" class="status-pill"><span class="status-dot"></span> Listo sin conexión</span><button id="install-button" class="install-button hidden" type="button">Instalar app <span aria-hidden="true">↗</span></button></div>
+ </header>
+ <main>
+  <div class="hero">
+   <div class="hero-copy"><div class="eyebrow"><span class="eyebrow-line"></span> DIAGNÓSTICO TÉCNICO DE REFRIGERACIÓN</div><h1>Localiza la avería.<br><span>Comprueba antes de actuar.</span></h1><p>Selecciona lo que observas en la instalación. Consulta las causas más probables, sigue una ruta de verificación y guarda el parte.</p><div class="hero-meta"><span><span class="meta-icon">✓</span> <span id="case-count-hero">—</span> fichas técnicas</span><span><span class="meta-icon">✓</span> Consulta offline</span><span><span class="meta-icon">✓</span> Sin cuentas</span></div></div>
+   <div class="hero-art" aria-hidden="true"><div class="radar-ring r1"></div><div class="radar-ring r2"></div><div class="radar-ring r3"></div><div class="hero-center"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="29"/><path d="M40 15v50M18 27l44 26M18 53l44-26"/><circle cx="40" cy="40" r="5"/></svg></div><div class="hero-code a">HI · 24.8</div><div class="hero-code b">SYS / READY</div></div>
+  </div>
+  <nav class="nav-tabs" aria-label="Secciones">
+   <button type="button" data-tab="diagnostico" class="nav-tab active"><span class="nav-ico">⌕</span> Diagnóstico</button>
+   <button type="button" data-tab="biblioteca" class="nav-tab"><span class="nav-ico">▤</span> Biblioteca</button>
+   <button type="button" data-tab="mediciones" class="nav-tab"><span class="nav-ico">∑</span> Mediciones</button>
+   <button type="button" data-tab="partes" class="nav-tab"><span class="nav-ico">▣</span> Partes <span id="parts-nav-count" class="nav-counter hidden">0</span></button>
+   <button type="button" data-tab="seguridad" class="nav-tab"><span class="nav-ico">⚠</span> Seguridad</button>
+  </nav>
+  <section id="view-diagnostico" class="view active" aria-label="Diagnóstico">
+   <div class="section-intro"><div><div class="section-tag">01 / DIAGNÓSTICO GUIADO</div><h2>¿Qué está ocurriendo?</h2><p>Marca los síntomas observados. Puedes combinar varios para afinar las fichas mostradas.</p></div><button type="button" id="clear-diagnostic" class="text-button">Limpiar selección ↺</button></div>
+   <div class="diagnostic-grid">
+    <div class="config-stack">
+     <div class="panel"><div class="panel-header"><div><span class="step-nr">01</span><h3>Equipo afectado</h3></div></div><div class="system-options" id="system-options"></div></div>
+     <div class="panel"><div class="panel-header"><div><span class="step-nr">02</span><h3>Síntomas observados</h3></div><span id="selected-symptoms-label" class="muted-small">Ninguno seleccionado</span></div><div class="symptom-options" id="symptom-options"></div><div class="panel-footer"><span>Selecciona todos los que correspondan.</span><span id="selection-count">0 seleccionados</span></div></div>
+    </div>
+    <div class="results-stack">
+     <div class="results-head"><div><span class="section-tag">03 / RESULTADOS</span><h3>Hipótesis a comprobar</h3></div><span id="results-count" class="count-pill">—</span></div>
+     <div id="results-placeholder" class="placeholder-card"><div class="placeholder-icon">⌕</div><h3>Empieza por el síntoma</h3><p>Elige al menos un síntoma y aparecerán las fichas relacionadas, con causas y comprobaciones.</p><div class="quick-label">CONSULTAS HABITUALES</div><div id="quick-start" class="quick-start"></div></div>
+     <div id="diagnostic-results" class="results-list"></div>
+     <p id="diagnostic-footnote" class="tiny-note hidden">Ordenadas por coincidencia de síntomas, no por probabilidad estadística. Confirma siempre con medidas y manual del equipo.</p>
+    </div>
+   </div>
+  </section>
+  <section id="view-biblioteca" class="view" aria-label="Biblioteca de averías">
+   <div class="section-intro"><div><span class="section-tag">CONSULTA DIRECTA</span><h2>Biblioteca técnica</h2><p>Busca por síntoma, componente, causa o tipo de fallo. Todas las fichas están disponibles sin internet.</p></div><span class="library-count" id="library-count"></span></div>
+   <div class="library-tools"><label class="search-wrap"><span>⌕</span><input id="library-search" type="search" placeholder="Buscar: filtro, aspiración, escarcha, solenoide…" autocomplete="off" aria-label="Buscar averías"></label><select id="library-system" aria-label="Filtrar equipo"></select><button id="favorites-filter" type="button" class="outline-button">☆ Favoritos</button></div>
+   <div id="library-list" class="library-grid"></div><p id="library-empty" class="empty-message hidden">No hay fichas con esos filtros.</p>
+  </section>
+  <section id="view-mediciones" class="view" aria-label="Calculadoras de mediciones">
+   <div class="section-intro"><div><span class="section-tag">HERRAMIENTAS DE CAMPO</span><h2>Mediciones frigoríficas</h2><p>Calcula el recalentamiento y el subenfriamiento a partir de temperaturas medidas y de saturación.</p></div></div>
+   <div class="measurement-grid">
+    <div class="calc-card"><div class="calc-title"><div class="calc-glyph">↗</div><div><h3>Recalentamiento</h3><p>Superheat · lado de aspiración</p></div></div><div class="formula">T<sub>tubo aspiración</sub> − T<sub>sat. evaporación</sub></div><label>Temperatura real del tubo (°C)<input type="text" inputmode="decimal" id="sh-pipe" placeholder="Ej. 8,5" /></label><label>Temperatura de saturación de evaporación (°C)<input type="text" inputmode="decimal" id="sh-sat" placeholder="Ej. 2" /></label><div class="calc-result" id="sh-result"><span>RESULTADO</span><strong>— <small>K</small></strong><p>Introduce las dos temperaturas.</p></div></div>
+    <div class="calc-card"><div class="calc-title"><div class="calc-glyph liquid-glyph">↘</div><div><h3>Subenfriamiento</h3><p>Subcooling · lado de líquido</p></div></div><div class="formula">T<sub>sat. condensación</sub> − T<sub>tubo líquido</sub></div><label>Temperatura de saturación de condensación (°C)<input type="text" inputmode="decimal" id="sc-sat" placeholder="Ej. 38" /></label><label>Temperatura real del tubo de líquido (°C)<input type="text" inputmode="decimal" id="sc-pipe" placeholder="Ej. 32" /></label><div class="calc-result" id="sc-result"><span>RESULTADO</span><strong>— <small>K</small></strong><p>Introduce las dos temperaturas.</p></div></div>
+   </div>
+   <div class="info-banner"><strong>Importante: </strong>La temperatura de saturación se obtiene a partir de la presión <em>y del refrigerante correcto</em> mediante tabla P/T o instrumento adecuado. Para mezclas con deslizamiento, consulta cuándo utilizar punto de rocío o burbuja. No hay un valor «bueno» universal: compara con fabricante y condiciones de operación.</div>
+   <div class="reference-strip"><div><strong>Observación útil de la guía Danfoss</strong><p>En su ejemplo de condensador por aire, relaciona temperatura de entrada de aire y condensación con una diferencia de 10–20 K; en evaporadores con válvula termostática indica 6–15 K entre aire de entrada y evaporación.</p></div><span>Referencia histórica · no valor universal</span></div>
+  </section>
+  <section id="view-partes" class="view" aria-label="Registro de intervenciones">
+   <div class="section-intro"><div><span class="section-tag">CUADERNO LOCAL</span><h2>Mis intervenciones</h2><p>Guarda lo observado y exporta el historial para incorporarlo después a tus partes de mantenimiento.</p></div><button type="button" id="export-parts" class="primary-button">↓ Exportar CSV</button></div>
+   <div class="parts-layout"><form id="part-form" class="panel part-form"><div class="panel-header"><div><span class="step-nr">＋</span><h3>Nuevo registro</h3></div></div><label>Edificio / ubicación<input id="part-location" maxlength="100" placeholder="Ej. Edificio 18 · cubierta" /></label><label>Equipo<input id="part-equipment" maxlength="120" placeholder="Ej. Enfriadora 1, cámara 2…" /></label><label>Ficha de referencia<select id="part-case"><option value="">Sin vincular a una ficha</option></select></label><label>Observaciones y mediciones<textarea id="part-notes" rows="5" maxlength="4000" placeholder="Síntomas, presiones, temperaturas, causa verificada, actuación…"></textarea></label><div class="form-actions"><span>Se guarda únicamente en este dispositivo.</span><button type="submit" class="primary-button">Guardar parte ✓</button></div><div id="part-feedback" class="form-feedback" role="status"></div></form><div class="parts-records"><div class="results-head"><h3>Historial</h3><span id="parts-count" class="count-pill">0</span></div><div id="parts-list"></div></div></div>
+  </section>
+  <section id="view-seguridad" class="view" aria-label="Seguridad y fuentes">
+   <div class="section-intro"><div><span class="section-tag">ANTES DE INTERVENIR</span><h2>Seguridad y criterio</h2><p>Una ficha ayuda a orientar la búsqueda; no autoriza maniobras ni sustituye las medidas.</p></div></div>
+   <div class="safety-grid"><article class="safety-card danger"><div class="safety-icon">⚠</div><h3>Protege el compresor</h3><p>Si hay golpeteos fuertes, retorno de líquido, espuma persistente o alarmas críticas, valora parar la instalación conforme a protocolo. No anules las seguridades.</p></article><article class="safety-card"><div class="safety-icon">⚡</div><h3>Riesgo eléctrico</h3><p>Para abrir cuadros o acceder a elementos activos, aplica aislamiento, bloqueo y verificación de ausencia de tensión conforme a los procedimientos y tu habilitación.</p></article><article class="safety-card"><div class="safety-icon">◌</div><h3>Refrigerante y presión</h3><p>No aflojes conexiones con el circuito presurizado. Las cargas, recuperaciones, reparaciones de fugas y aperturas del circuito requieren personal y medios autorizados.</p></article><article class="safety-card"><div class="safety-icon">⊙</div><h3>Antes de añadir refrigerante</h3><p>Comprueba primero tipo de gas, subenfriamiento, recalentamiento, flujo de aire/agua, obstrucciones y estanqueidad. Las burbujas no prueban por sí solas una falta de carga.</p></article></div>
+   <div class="source-box"><div><span class="section-tag">FUENTE TÉCNICA</span><h3>Basada en tu manual de Danfoss</h3><p><em>Notas del Instalador · Localización de averías en instalaciones de refrigeración</em>. Danfoss A/S, marzo de 2005, páginas impresas 6–23 (archivo de 18 páginas). Las fichas están resumidas y adaptadas para consulta rápida. Las prescripciones de 2005 pueden no reflejar equipos actuales ni la normativa vigente.</p><p class="tiny-note">Consulta el manual original de Danfoss aportado en la conversación. No se redistribuye en este repositorio público.</p></div><div class="source-stamp">DANFOSS<br><strong>2005</strong><span>FUENTE DOCUMENTAL</span></div></div>
+   <p class="tiny-note">FríoCheck es una herramienta independiente de apoyo al diagnóstico, no un producto oficial de Danfoss. Los resultados no constituyen una evaluación de seguridad ni un diagnóstico confirmado.</p>
+  </section>
+ </main>
+ <footer class="footer"><span>FríoCheck <span class="footer-mark">◆</span> Hecho para técnicos de mantenimiento</span><span>Los datos y partes permanecen en tu navegador.</span></footer>
+ </div>
+ <div id="detail-overlay" class="detail-overlay hidden" aria-hidden="true"><div class="detail-backdrop" id="detail-backdrop"></div><aside class="detail-sheet" role="dialog" aria-modal="true" aria-labelledby="detail-title"><div class="detail-toolbar"><span id="detail-tag" class="section-tag"></span><div class="detail-actions"><button type="button" class="icon-button" id="detail-favorite" title="Guardar favorita" aria-label="Guardar favorita">☆</button><button type="button" class="icon-button" id="detail-close" title="Cerrar" aria-label="Cerrar">✕</button></div></div><div class="detail-content" id="detail-content"></div><div class="detail-bottom"><button type="button" class="outline-button" id="detail-copy">Copiar resumen</button><button type="button" class="primary-button" id="detail-create-part">＋ Añadir al parte</button></div></aside></div>
+ <div id="toast" class="toast" role="status" aria-live="polite"></div>
+ <script src="data.js"></script>
+ <script src="app.js"></script>
+</body>
+</html>
